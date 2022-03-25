@@ -15,11 +15,11 @@ I MADE THE SCRIPT AS COMPACT AS I COULD WITHOUT ANY for example DISCORD WEBHOOK 
 ```Opera GX```
 
 # HOW TO
-open cmd and paste in: ```pip install -r requirements.txt```
+open cmd terminal and paste in: ```pip install -r requirements.txt```
 
 ![alt text](https://i.imgur.com/G6Z41WG.png)
 
-remove "#" for whatever you wanna use, you can also use both\
+remove the "#" for whatever you wanna use, you can also use both\
 line 222 = telegram api    (number 1 on screenshot)\
 line 223 = discord webhook (number 2 on screenshot)
 
