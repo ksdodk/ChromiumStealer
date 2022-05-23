@@ -209,7 +209,7 @@ def main_tokens():
         if not os.path.exists(path):
             continue
         try:
-            tokens = get_tokens(path)
+            tokens = set(get_tokens(path))
         except:
             continue
         if tokens == []:
