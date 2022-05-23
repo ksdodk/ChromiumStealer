@@ -18,8 +18,8 @@ open cmd terminal and paste in: ```pip install -r requirements.txt```
 
 ```
 token = "TELEGRAM TOKEN"
-chatid = "TELEGRAM CHATID"\
-webhookurl = "WEBHOOK URL"\
+chatid = "TELEGRAM CHATID"
+webhookurl = "WEBHOOK URL"
 
 if you don't understand it you shouldn't use it,
 just add your TELEGRAM TOKEN, CHATID and/or your DISCORD WEBHOOK into these 3 lines 
