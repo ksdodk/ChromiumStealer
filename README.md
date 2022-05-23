@@ -2,7 +2,8 @@
 gets every password/cookie on a PC stored by a Chromium browser, decrypts it and\
 sends it to your DISCORD WEBHOOK and/or to your TELEGRAM Bot Chat.
 
-I MADE THE SCRIPT AS COMPACT AS I COULD WITHOUT ANY for example DISCORD WEBHOOK PACKAGES ETC.
+# my first Python project, i will revise everything as soon as i got time
+
 
 ![alt text](https://i.imgur.com/CVrMpsS.png)
 ![alt text](https://i.imgur.com/ZPwsFEy.png)
