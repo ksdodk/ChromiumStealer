@@ -22,14 +22,18 @@ and/or\
 # HOW TO
 open cmd terminal and paste in: ```pip install -r requirements.txt```
 
+```py
+def post_to(file):
+    token = "TELEGRAM TOKEN"     # put your token in here, if you don't wanna use telegram leave it like it is
+    chat_id = "TELEGRAM CHATID"  # "    chatid          "                     telegram      "
+    webhook_url = "WEBHOOK URL"  # "    webhook         "                     discord       "
+    # if you don't understand it you shouldn't use it
 ```
-token = "TELEGRAM TOKEN"
-chatid = "TELEGRAM CHATID"
-webhookurl = "WEBHOOK URL"
 
-if you don't understand it you shouldn't use it,
-just add your TELEGRAM TOKEN, CHATID and/or your DISCORD WEBHOOK into these 3 lines 
-```
+edit code in line 225, 226 and/or 227
+if you don't understand it you shouldn't use it,\
+just add your TELEGRAM TOKEN, CHATID and/or your DISCORD WEBHOOK into these 3 lines
+
 
 # REQUIREMENTS
 ```pycryptodomex```\
