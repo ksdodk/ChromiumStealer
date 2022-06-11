@@ -25,8 +25,8 @@ open cmd terminal and paste in: ```pip install -r requirements.txt```
 ```py
 def post_to(file):
     token = "TELEGRAM TOKEN"     # put your token in here, if you don't wanna use telegram leave it like it is
-    chat_id = "TELEGRAM CHATID"  # "    chatid          "                     telegram      "
-    webhook_url = "WEBHOOK URL"  # "    webhook         "                     discord       "
+    chat_id = "TELEGRAM CHATID"  # "        chatid          "                     telegram      "
+    webhook_url = "WEBHOOK URL"  # "        webhook         "                     discord       "
     # if you don't understand it you shouldn't use it
 ```
 
